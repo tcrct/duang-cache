@@ -18,20 +18,7 @@ public class Redis {
     private JedisPool jedisPool;
     private ISerializer serializer;
     private IKeyNamingPolicy keyNamingPolicy;
-    private final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
     private static Redis REDIS;
-
-    private Jedis getThreadLocalJedis() {
-        return threadLocalJedis.get();
-    }
-
-    private void setThreadLocalJedis(Jedis jedis) {
-        threadLocalJedis.set(jedis);
-    }
-
-    private void removeThreadLocalJedis() {
-        threadLocalJedis.remove();
-    }
 
     public Redis(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
         this.name = name;
@@ -50,17 +37,14 @@ public class Redis {
             if(null == jedisPool) {
                 throw new CacheException("jedisPool is null");
             }
-            Jedis jedis = getThreadLocalJedis();
-            return jedis != null ? jedis : jedisPool.getResource();
+            return jedisPool.getResource();
         } catch (Exception e) {
-            removeThreadLocalJedis();
             throw new CacheException("取jedis资料时出错: " + e.getMessage(), e);
         }
     }
 
     private void close(Jedis jedis) {
-        if (null != threadLocalJedis.get() && null != jedis) {
-            removeThreadLocalJedis();
+        if ( jedis != null) {
             jedis.close();
 //            jedisPool.close();
         }
@@ -77,15 +61,12 @@ public class Redis {
         Jedis jedis = null;
         try {
             jedis = getResource();
-            setThreadLocalJedis(jedis);
             result = (T) action.execute(jedis);
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
         }
         finally {
-            if(null != jedis) {
-                close(jedis);
-            }
+            close(jedis);
         }
         return result;
     }
