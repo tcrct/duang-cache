@@ -19,10 +19,6 @@ public class App
         CacheKit.redis().model(cacheModel).set();
 
         CacheKit.ehcache().expire(123);
-//        jvmCache.
-//        CacheKit.duang().key().value().type(CacheEnum.REDIS).put();
-//        CacheKit.duang().key().remove();
-
 
     }
 
