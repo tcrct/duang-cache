@@ -1,3 +1,9 @@
+/target/
+target
+/classes/
+classes
+*.class
+
 # Compiled class file
 *.class
 
@@ -13,6 +19,29 @@
 # Package Files #
 *.jar
 *.war
+*.ear
+.classpath
+.project
+*.iml
+*.pid
+*.txt
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/log/
+/.settings/
+/data/backups/
+#/data/
+/scripts/
+/bin/
+/.idea/
+/.gitee/
+/test/
+# 不提交上传文件夹
+/uploadfiles/
+
+#App*.java
+*Test.java
 *.nar
 *.ear
 *.zip
@@ -21,3 +50,7 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+/webapp/WEB-INF/classes/
+/webapp/WEB-INF/test-classes/
+/webapp/WEB-INF/target/
