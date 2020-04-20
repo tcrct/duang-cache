@@ -3,12 +3,10 @@ package com.duangframework.cache.redis;
 import com.duangframework.cache.core.CacheException;
 import com.duangframework.cache.core.CacheModel;
 import com.duangframework.cache.redis.serializer.ISerializer;
-import com.sun.org.apache.regexp.internal.RE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.util.SafeEncoder;
 
 public class Redis {
 
@@ -17,14 +15,12 @@ public class Redis {
     private String name;
     private JedisPool jedisPool;
     private ISerializer serializer;
-    private IKeyNamingPolicy keyNamingPolicy;
     private static Redis REDIS;
 
-    public Redis(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
+    public Redis(String name, JedisPool jedisPool, ISerializer serializer) {
         this.name = name;
         this.jedisPool = jedisPool;
         this.serializer = serializer;
-        this.keyNamingPolicy = keyNamingPolicy;
         REDIS = this;
     }
 
@@ -43,10 +39,13 @@ public class Redis {
         }
     }
 
+    public void close() {
+        jedisPool.close();
+    }
+
     private void close(Jedis jedis) {
         if ( jedis != null) {
             jedis.close();
-//            jedisPool.close();
         }
     }
 

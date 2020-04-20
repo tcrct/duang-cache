@@ -18,7 +18,6 @@ public class App
         CacheKit.jvm().model(cacheModel).set();
         CacheKit.redis().model(cacheModel).set();
 
-        CacheKit.ehcache().expire(123);
 
     }
 
