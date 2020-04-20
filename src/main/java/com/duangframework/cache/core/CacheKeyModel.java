@@ -2,13 +2,12 @@ package com.duangframework.cache.core;
 
 import com.duangframework.cache.kit.ToolsKit;
 
-public class CacheModel {
+public class CacheKeyModel {
 
     private String keyPrefix;
     private String customKey;
     private Integer ttl;
     private String keyDesc;
-    private Object value;
 
 
     public static class Builder {
@@ -17,7 +16,6 @@ public class CacheModel {
         private String keyPrefix;
         private int ttl;
         private String keyDesc;
-        private Object value;
 
         public Builder() { }
         /**
@@ -50,23 +48,17 @@ public class CacheModel {
             return this;
         }
 
-        public Builder value(Object value) {
-            this.value = value;
-            return this;
-        }
-
-        public CacheModel builder() {
-            return new CacheModel(this);
+        public CacheKeyModel build() {
+            return new CacheKeyModel(this);
         }
     }
 
 
-    private CacheModel(Builder builder) {
+    private CacheKeyModel(Builder builder) {
         keyPrefix = builder.keyPrefix;
         customKey = builder.customKey;
         ttl = builder.ttl;
         keyDesc = builder.keyDesc;
-        value = builder.value;
     }
 
     /**
@@ -100,11 +92,4 @@ public class CacheModel {
         return keyDesc;
     }
 
-    /**
-     * 需要缓存的值
-     * @return
-     */
-    public Object getValue() {
-        return value;
-    }
 }

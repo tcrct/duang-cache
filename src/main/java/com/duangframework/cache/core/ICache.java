@@ -6,7 +6,7 @@ package com.duangframework.cache.core;
 public interface ICache<E> {
 
 
-    E model(CacheModel model);
+    E model(CacheKeyModel model);
 
 
     /**

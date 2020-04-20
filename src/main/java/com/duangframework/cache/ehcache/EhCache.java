@@ -1,6 +1,6 @@
 package com.duangframework.cache.ehcache;
 
-import com.duangframework.cache.core.CacheModel;
+import com.duangframework.cache.core.CacheKeyModel;
 import com.duangframework.cache.core.ICache;
 import com.duangframework.cache.kit.CacheKit;
 import net.sf.ehcache.Cache;
@@ -61,7 +61,7 @@ public class EhCache implements ICache<EhCache> {
     }
 
     @Override
-    public EhCache model(CacheModel model) {
+    public EhCache model(CacheKeyModel model) {
         return null;
     }
 

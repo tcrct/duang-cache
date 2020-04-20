@@ -1,12 +1,15 @@
 package com.duangframework.cache.redis;
 
 import com.duangframework.cache.core.CacheException;
-import com.duangframework.cache.core.CacheModel;
+import com.duangframework.cache.core.CacheKeyModel;
 import com.duangframework.cache.redis.serializer.ISerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import java.util.Iterator;
+import java.util.Map;
 
 public class Redis {
 
@@ -99,11 +102,11 @@ public class Redis {
      * 如果 key 已经持有其他值， SET 就覆写旧值，无视类型。
      * 对于某个原本带有生存时间（TTL）的键来说， 当 SET 命令成功在这个键上执行时， 这个键原有的 TTL 将被清除。
      */
-    public boolean set(CacheModel model) {
+    public boolean set(final CacheKeyModel model, final Object value) {
         return call(new JedisAction<Boolean>(){
             @Override
             public Boolean execute(Jedis jedis) {
-                String result = jedis.set(serializerKey(model.getKey()), serializeValue(model.getValue()));
+                String result = jedis.set(serializerKey(model.getKey()), serializeValue(value));
                 boolean isOk =  "OK".equalsIgnoreCase(result);
                 if(isOk) {
                     expire(model);
@@ -118,7 +121,7 @@ public class Redis {
      * 如果 key 不存在那么返回特殊值 nil 。
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(CacheModel model) {
+    public <T> T get(final CacheKeyModel model) {
         return call(new JedisAction<T>(){
             @Override
             public T execute(Jedis jedis) {
@@ -134,7 +137,7 @@ public class Redis {
      *  1 如果成功设置过期时间。
      * 0  如果key不存在或者不能设置过期时间。
      */
-    public Long expire(final CacheModel model) {
+    public Long expire(final CacheKeyModel model) {
         return call(new JedisAction<Long>(){
             @Override
             public Long execute(Jedis jedis) {
@@ -152,11 +155,47 @@ public class Redis {
      * @param model
      * @return
      */
-    public Long del(final CacheModel model){
+    public Long del(final CacheKeyModel model){
         return call(new JedisAction<Long>(){
             @Override
             public Long execute(Jedis jedis) {
                 return jedis.del(model.getKey());
+            }
+        });
+    }
+
+    /**
+     * 同时设置一个或多个 key-value 对。
+     * 如果某个给定 key 已经存在，那么 MSET 会用新值覆盖原来的旧值，如果这不是你所希望的效果，请考虑使用 MSETNX 命令：它只会在所有给定 key 都不存在的情况下进行设置操作。
+     * MSET 是一个原子性(atomic)操作，所有给定 key 都会在同一时间内被设置，某些给定 key 被更新而另一些给定 key 没有改变的情况，不可能发生。
+     * <pre>
+     * 例子：
+     * Cache cache = RedisKit.use();			// 使用 Redis 的 cache
+     * cache.mset("k1", "v1", "k2", "v2");		// 放入多个 key value 键值对
+     * List list = cache.mget("k1", "k2");		// 利用多个键值得到上面代码放入的值
+     * </pre>
+     */
+    public Boolean mset(final CacheKeyModel model, final Map<String, String> values) {
+        return call(new JedisAction<Boolean>() {
+            @Override
+            public Boolean execute(Jedis jedis) {
+                int size = values.size();
+                byte[][] kv = new byte[size][];
+                int i = 0;
+                for (Iterator<Map.Entry<String,String>> it = values.entrySet().iterator(); it.hasNext(); ){
+                    Map.Entry<String,String> entry = it.next();
+                    if (i % 2 == 0) {
+                        kv[i] = serializerKey(entry.getKey());
+                    } else {
+                        kv[i] = serializeValue(entry.getValue());
+                    }
+                    i++;
+                }
+                boolean isOk = "OK".equalsIgnoreCase(jedis.mset(kv));
+                if(isOk) {
+                    expire(model);
+                }
+                return isOk;
             }
         });
     }

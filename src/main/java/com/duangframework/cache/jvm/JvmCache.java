@@ -1,7 +1,7 @@
 package com.duangframework.cache.jvm;
 
 import com.duangframework.cache.core.CacheException;
-import com.duangframework.cache.core.CacheModel;
+import com.duangframework.cache.core.CacheKeyModel;
 import com.duangframework.cache.core.ICache;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public class JvmCache implements ICache<JvmCache> {
 
     private static final Map<String, Object> JVM_CACHE_MAP = new ConcurrentHashMap<>();
     private static JvmCache JVM_CACHE = new JvmCache();
-    private CacheModel model;
+    private CacheKeyModel model;
 
     public static JvmCache duang() {
 
@@ -45,13 +45,13 @@ public class JvmCache implements ICache<JvmCache> {
             throw new CacheException("设置缓存值时，[value]值不能为空");
         }
         if (null == model) {
-            model = new CacheModel.Builder().customKey(key).value(value).builder();
+            model = new CacheKeyModel.Builder().customKey(key).value(value).builder();
         }
         JVM_CACHE_MAP.put(model.getKey(), model.getValue());
     }
 
     @Override
-    public JvmCache model(CacheModel model) {
+    public JvmCache model(CacheKeyModel model) {
         this.model = model;
         return this;
     }
