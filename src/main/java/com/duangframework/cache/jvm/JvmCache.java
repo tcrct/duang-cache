@@ -45,9 +45,9 @@ public class JvmCache implements ICache<JvmCache> {
             throw new CacheException("设置缓存值时，[value]值不能为空");
         }
         if (null == model) {
-            model = new CacheKeyModel.Builder().customKey(key).value(value).builder();
+            model = new CacheKeyModel.Builder().customKey(key).build();
         }
-        JVM_CACHE_MAP.put(model.getKey(), model.getValue());
+        JVM_CACHE_MAP.put(model.getKey(), value);
     }
 
     @Override
