@@ -20,7 +20,6 @@ public class JvmCache implements ICache<JvmCache> {
     private CacheKeyModel model;
 
     public static JvmCache duang() {
-
         return JVM_CACHE;
     }
 

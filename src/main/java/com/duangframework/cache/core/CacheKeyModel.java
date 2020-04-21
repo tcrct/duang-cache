@@ -8,7 +8,7 @@ public class CacheKeyModel {
     private String customKey;
     private Integer ttl;
     private String keyDesc;
-
+    private ICacheKeyEnums keyEnums;
 
     public static class Builder {
 
@@ -16,6 +16,7 @@ public class CacheKeyModel {
         private String keyPrefix;
         private int ttl;
         private String keyDesc;
+        private ICacheKeyEnums keyEnums;
 
         public Builder() { }
         /**
@@ -23,6 +24,7 @@ public class CacheKeyModel {
          * @param enums
          */
         public Builder(ICacheKeyEnums enums) {
+            this.keyEnums = enums;
             this.keyPrefix = enums.getKeyPrefix();
             this.ttl = enums.getKeyTTL();
             this.keyDesc = enums.getKeyDesc();
@@ -59,6 +61,7 @@ public class CacheKeyModel {
         customKey = builder.customKey;
         ttl = builder.ttl;
         keyDesc = builder.keyDesc;
+        keyEnums = builder.keyEnums;
     }
 
     /**
@@ -66,10 +69,14 @@ public class CacheKeyModel {
      * @return
      */
     public String getKey() {
-        if(keyPrefix.endsWith(":") && ToolsKit.isNotEmpty(customKey)){
-            return keyPrefix + customKey;
+        if (null != keyEnums) {
+            if (keyPrefix.endsWith(":") && ToolsKit.isNotEmpty(customKey)) {
+                return keyPrefix + customKey;
+            } else {
+                return ToolsKit.isNotEmpty(customKey) ? keyPrefix + ":" + customKey : keyPrefix;
+            }
         } else {
-            return ToolsKit.isNotEmpty(customKey) ?keyPrefix+":"+customKey : keyPrefix;
+            return customKey;
         }
     }
 
